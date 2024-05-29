@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+<!-- 메시지 입력란 -->
+<input type="text" id="message" placeholder="Type a message">
+<!-- 전송 버튼 -->
+<button id="sendButton">Send</button>
+
+<script>
+    // 페이지가 로드될 때 Socket.IO 클라이언트를 서버에 자동으로 연결합니다.
+    const socket = io('http://localhost:8085', {
+        autoConnect:false, // 페이지가 로드될 때 자동으로 연결하지 않음
+        reconnection: false // 다시 연결 비활성화
+    });
+
+    // 페이지가 로드되었을 때 서버와 연결합니다.
+    window.addEventListener('load', () => {
+        socket.connect();
+    });
+
+    // 서버와 연결될 때 발생하는 이벤트 핸들러
+    socket.on("connect", () => {
+        console.log("connected");
+    });
+
+    // 서버로부터 메시지를 수신할 때 발생하는 이벤트 핸들러
+    socket.on('message', function (data) {
+        console.log('Received message:', data);
+    });
+
+    // 메시지 전송 함수
+    function sendMessage() {
+        var message = document.getElementById('message').value; // 입력된 메시지 가져오기
+        socket.emit('sendMessage', message); // 서버로 메시지 전송
+    }
+
+    // 버튼 클릭 시 sendMessage 함수 호출
+    document.getElementById('sendButton').addEventListener('click', sendMessage);
+</script>
+</body>
+</html>

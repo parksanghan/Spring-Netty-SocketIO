@@ -1,0 +1,84 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'org.socketio'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenLocal() // 로컬 저장소 사용
+	mavenCentral()
+
+}
+dependencies {
+	implementation 'org.socketio:testtt:1.0-SNAPSHOT'
+	implementation 'org.sanghan.repository:untitled:1.0-SNAPSHOT'
+	implementation 'org.sanghan.repository:annotation:1.0-SNAPSHOT'
+
+ 	implementation 'com.google.auto.service:auto-service:1.1.1'
+ 	implementation('org.springframework.boot:spring-boot-starter-thymeleaf:3.0.4')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.zaxxer:HikariCP:4.0.3'
+	implementation 'org.projectlombok:lombok'// 현재 버전에 맞게 변경해야 할 수 있습니다
+	annotationProcessor('org.projectlombok:lombok')
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	runtimeOnly 'com.mysql:mysql-connector-j' // MYSQL DB 접속 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // ORM 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-security' //  Spring Security
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+	// https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio
+	implementation 'com.corundumstudio.socketio:netty-socketio:2.0.9'
+	implementation 'org.springframework.session:spring-session-data-redis'
+
+}
+tasks.named('test') {
+
+}
+def frontendDir = "$projectDir/src/main/resources/fronted"
+
+sourceSets {
+	main {
+		resources { srcDirs = ["$projectDir/src/main/resources"]
+		}
+	}
+}
+
+processResources { dependsOn "copyReactBuildFiles" }
+
+task installReact(type: Exec) {
+	workingDir "$frontendDir"
+	inputs.dir "$frontendDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install' }
+	else {
+		commandLine "npm", "audit", "fix" commandLine 'npm', 'install'
+	}
+}
+
+task buildReact(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$frontendDir"
+	inputs.dir "$frontendDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "run-script", "build"
+	} else {
+		commandLine "npm", "run-script", "build"
+	}
+}
+
+task copyReactBuildFiles(type: Copy) {
+	dependsOn "buildReact"
+	from "$frontendDir/build"
+	into "$projectDir/src/main/resources/static"
+}

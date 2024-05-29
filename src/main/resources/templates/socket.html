@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Example</title>
+    <!-- 클라이언트 측 Socket.IO 라이브러리 -->
+    <script src="https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js"></script>
+</head>
+<body>
+<!-- 메시지 입력란 -->
+<input type="text" id="message" placeholder="Type a message">
+<!-- 전송 버튼 -->
+<button id="sendButton">Send</button>
+<!-- 연결 버튼 -->
+<button id="connectButton">Connect</button>
+
+<script>
+    // Socket.IO 클라이언트 라이브러리를 로드한 후에 전역 객체인 io를 사용하여 Socket.IO 클라이언트를 초기화합니다.
+    const socket = io('http://localhost:8085', {
+        transports:["websocket"],
+        autoConnect:false, // 자동 연결 비활성화
+        reconnection: true // 다시 연결 활성화
+    });
+
+    // 서버로부터 연결되었을 때 발생하는 이벤트 핸들러
+    socket.on("connect", () => {
+        console.log("connected");
+    });
+
+    // 서버로부터 메시지를 수신할 때 발생하는 이벤트 핸들러
+    socket.on('message', function (data) {
+        console.log('Received message:', data);
+    });
+
+    // 메시지 전송 함수
+    function sendMessage() {
+        var message = document.getElementById('message').value; // 입력된 메시지 가져오기
+        socket.emit('message', message); // 서버로 메시지 전송
+    }
+
+    // 소켓 연결 함수
+    function connectSocket() {
+        socket.connect(); // 소켓 연결 시도
+    }
+
+    // 버튼 클릭 시 각각의 함수 호출
+    document.getElementById('sendButton').addEventListener('click', sendMessage);
+    document.getElementById('connectButton').addEventListener('click', connectSocket);
+</script>
+</body>
+</html>

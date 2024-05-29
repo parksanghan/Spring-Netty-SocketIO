@@ -1,0 +1,6 @@
+rootProject.name = 'demo'
+include ':annotation-module'
+
+
+
+project(':annotation-module').projectDir = new File("F:/SpringBoot/SocketioTest/annotation-module")
