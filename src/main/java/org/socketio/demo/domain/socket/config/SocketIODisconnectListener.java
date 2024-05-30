@@ -1,42 +1,76 @@
 package org.socketio.demo.domain.socket.config;
 
+import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socketio.demo.config.AuthenticationFilter;
+import org.socketio.demo.domain.service.SocketSessionManager;
+import org.socketio.demo.domain.socket.SocketIOHandler;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class SocketIODisconnectListener {
+ public class SocketIODisconnectListener {
+    private static final Logger log = LoggerFactory.getLogger(SocketIODisconnectListener.class);
     private final SessionRegistry sessionRegistry;
+     private final SocketSessionManager socketSessionManager;
     @Setter
     private SocketIOServer server ;
 
-    public void onDisconnect(SocketIOClient socketIOClient) {
+
+    public void onDisconnect(SocketIOClient socketIOClient)  {
+        try{
         System.out.println("disconnected");
         Set<String> rooms=socketIOClient.getAllRooms();
-        if (!rooms.isEmpty()){
-            rooms.forEach(socketIOClient::leaveRoom);
-        }
         List<String> cookies=socketIOClient.getHandshakeData().getHttpHeaders().getAll(HttpHeaders.COOKIE);
+        UUID SocketId = socketIOClient.getSessionId();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonMapperData = objectMapper.writeValueAsString(Map.of("sid",socketIOClient.getSessionId()));
+        String JSID= null;
         for (String cookie:cookies){
             if(cookie.contains("JSESSIONID")){
-                cookie=cookie.replace("JSESSIONID","") ;
-                System.out.println("disconnected JSESSIONID:"+cookie);
-                if ( AuthenticationFilter.isValidSession(sessionRegistry,cookie))
-                    sessionRegistry.removeSessionInformation(cookie);
-                System.out.println("Deleted JSESSIONID:"+cookie);
+                String jsessionid= JSID=cookie.replace("JSESSIONID","") ;
+                System.out.println("disconnected JSESSIONID:"+jsessionid);
+                if ( AuthenticationFilter.isValidSession(sessionRegistry,jsessionid)) {
+                    sessionRegistry.removeSessionInformation(jsessionid);
+                    UserDetails authentication = AuthenticationFilter.findAuthenticationByJSessionId(sessionRegistry, jsessionid);
+                    if (authentication != null)
+                        socketSessionManager.deleteNames_SidAtDisconnect(socketIOClient.getSessionId(), authentication.getUsername());
+//                   names_sid 에 있는  names_sid[sid] = name 에서 삭제
+                    rooms.forEach(socketIOClient::leaveRoom);
+                    // 모든 방 나가기
+                    rooms.forEach(room -> socketSessionManager.deleteRooms_Sid(room, SocketId));
+                    // 모든 rooms_sid 삭제  rooms_sid[jSessionId]  = room 삭제
+                    rooms.forEach(room -> socketSessionManager.deleteUsersInRoom(room, SocketId));
+                    // 모든 users_in_rooms 삭제  users_in_rooms[room] = [] -> sid
+                    rooms.forEach(room -> SocketIOHandler.
+                            sendEventToOtherClientsExcluding
+                                    (room, "Dd", server, socketIOClient, jsonMapperData, true));
 
+
+                }
+
+                }
             }
-
-
+        }
+        catch (JsonProcessingException e){
+            SocketIODisconnectListener.log.info(e.getMessage());
         }
 
     }

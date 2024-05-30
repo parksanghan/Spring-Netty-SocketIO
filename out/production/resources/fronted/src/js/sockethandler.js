@@ -13,6 +13,9 @@ export const initializeSocket = () => {
     socket.on("connect", () => {
         console.log("cc");
     });
+    socket.on("hello",(data)=>{
+        console.log(data);
+    })
 };
 export const handleButtonClick = (message) => {
     if (socket) {

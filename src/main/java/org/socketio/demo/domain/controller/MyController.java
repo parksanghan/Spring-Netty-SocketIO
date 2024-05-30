@@ -58,26 +58,33 @@ public class MyController {
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello(ServletRequest request) {
-        HttpServletRequest  httpServletRequest=(HttpServletRequest)request;
-        Cookie[] cookies= httpServletRequest.getCookies();
-        Cookie cookie= searchJsessionid(cookies);
-        if (cookies!=null){
-            System.out.println("Cookie"+cookie.getValue());
-            System.out.println(socketSessionManager.names_sid.get(cookie.getValue()));
+        for (int i = 0; i < 20; i++) {
+            socketSessionManager.testAsync(i);
+            socketSessionManager.testAsync1(i);
         }
+        System.out.println("End Asnyc");
 
-
-         List<Object> allPrincipals =sessionRegistry.getAllPrincipals();
-        System.out.println(allPrincipals.size());
-         boolean is = allPrincipals.stream()
-                .map(UserDetails.class::cast)
-                .anyMatch(client -> sessionRegistry.getAllSessions(client, false)
-                        .stream()
-                        .anyMatch(sessionInformation -> sessionInformation.getSessionId().equals(cookie.getValue())));
-        System.out.println(is);
-
+ //        HttpServletRequest  httpServletRequest=(HttpServletRequest)request;
+//        Cookie[] cookies= httpServletRequest.getCookies();
+//        Cookie cookie= searchJsessionid(cookies);
+//        if (cookies!=null){
+//            System.out.println("Cookie"+cookie.getValue());
+//            System.out.println(socketSessionManager.names_sid.get(cookie.getValue()));
+//        }
+//         List<Object> allPrincipals =sessionRegistry.getAllPrincipals();
+//        System.out.println(allPrincipals.size());
+//         boolean is = allPrincipals.stream()
+//                .map(UserDetails.class::cast)
+//                .anyMatch(client -> sessionRegistry.getAllSessions(client, false)
+//                        .stream()
+//                        .anyMatch(sessionInformation -> sessionInformation.getSessionId().equals(cookie.getValue())));
+//        System.out.println(is);
         return ResponseEntity.ok("hello");
     }
+
+
+
+
     public Cookie searchJsessionid(Cookie[] cookies){
         if (cookies!=null){
             for(Cookie eacookie:cookies){

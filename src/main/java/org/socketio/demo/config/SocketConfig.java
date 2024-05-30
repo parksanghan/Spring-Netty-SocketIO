@@ -6,7 +6,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import io.netty.handler.codec.http.HttpHeaders;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
- import org.socketio.demo.domain.socket.config.SocketIOConnectListener;
+import lombok.SneakyThrows;
+import org.socketio.demo.domain.socket.config.SocketIOConnectListener;
 import org.socketio.demo.domain.socket.config.SocketIODisconnectListener;
 import org.socketio.demo.domain.socket.config.SocketIoAddMappingSupporter;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class SocketConfig {
     @Value("${socket-server.port}")
     private Integer port;
 
+    @SneakyThrows
     @Bean
     public SocketIOServer socketIOServer() {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
