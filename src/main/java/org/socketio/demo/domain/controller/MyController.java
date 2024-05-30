@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.socketio.demo.domain.entity.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.socketio.demo.domain.service.SocketSessionManager;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,8 +31,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MyController {
     final private AuthUserDetailsService authUserDetailsService;
-    final private PasswordEncoder passwordEncoder;
-    private final SessionRegistry sessionRegistry;
+    final private SocketSessionManager socketSessionManager;
+     private final SessionRegistry sessionRegistry;
     @GetMapping("/*")
     public String index()
     {
@@ -61,7 +63,10 @@ public class MyController {
         Cookie cookie= searchJsessionid(cookies);
         if (cookies!=null){
             System.out.println("Cookie"+cookie.getValue());
+            System.out.println(socketSessionManager.names_sid.get(cookie.getValue()));
         }
+
+
          List<Object> allPrincipals =sessionRegistry.getAllPrincipals();
         System.out.println(allPrincipals.size());
          boolean is = allPrincipals.stream()
@@ -70,6 +75,7 @@ public class MyController {
                         .stream()
                         .anyMatch(sessionInformation -> sessionInformation.getSessionId().equals(cookie.getValue())));
         System.out.println(is);
+
         return ResponseEntity.ok("hello");
     }
     public Cookie searchJsessionid(Cookie[] cookies){

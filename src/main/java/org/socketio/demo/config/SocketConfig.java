@@ -42,6 +42,7 @@ public class SocketConfig {
         config.setHostname(host);
         config.setPort(port);
         config.setOrigin("*");
+
         config.setAuthorizationListener(authZListener);
         // SSL 증명서를 로드하고 적용
 //        try {

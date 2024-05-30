@@ -22,6 +22,7 @@
     import org.springframework.security.core.AuthenticationException;
     import org.springframework.security.core.context.SecurityContext;
     import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.security.core.session.SessionInformation;
     import org.springframework.security.core.session.SessionRegistry;
     import org.springframework.security.core.session.SessionRegistryImpl;
     import org.springframework.security.core.userdetails.UserDetails;
@@ -141,7 +142,18 @@
             }
             return null;
         }
-
+        public static UserDetails findAuthenticationByJSessionId(SessionRegistry sessionRegistry, String jSessionId) {
+            List<Object> allPrincipals=sessionRegistry.getAllPrincipals();
+            for (int i = 0; i <allPrincipals.size() ; i++) {
+                List<SessionInformation> sessionInformation=sessionRegistry.getAllSessions(allPrincipals.get(i),false);
+                for (SessionInformation eaSession : sessionInformation){
+                    if (eaSession.getSessionId().equals(jSessionId)){
+                        return (UserDetails) allPrincipals.get(i);
+                    }
+                }
+            }
+            return null;
+        }
         @Bean
         public SessionRegistry sessionRegistry() {
             return new SessionRegistryImpl();

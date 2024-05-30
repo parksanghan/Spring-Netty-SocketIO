@@ -26,7 +26,7 @@ public class CustomGetterProcessor extends AbstractProcessor
     @Override
     public Set<String> getSupportedAnnotationTypes()
     {
-        TestTT tt= new TestTT();
+
 
         // 타겟 annotation class 정의
         Set<String> set = new HashSet<>();
@@ -99,7 +99,7 @@ public class CustomGetterProcessor extends AbstractProcessor
             }
             catch (IOException e)
             {
-                TestTT tt= new TestTT();
+
 
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "ERROR : " + e);
             }

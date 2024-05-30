@@ -12,7 +12,6 @@ import lombok.*;
 @Setter
 @RequiredArgsConstructor
 @Table(name = "authuser")
-
 public class AuthUser {
     @Id
     String username;
