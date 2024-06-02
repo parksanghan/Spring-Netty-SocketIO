@@ -32,7 +32,7 @@ public class SocketSessionManager{
     }
     public void saveRooms_Sid(String roomId, UUID socketId){
         rooms_sid.put(socketId,roomId);
-//        rooms_sid [socketId] = roomId
+//      rooms_sid [socketId] = roomId
     }
     public void saveUsersInRoom(String roomId , UUID socketId){
          if (usersInRoom.containsKey(roomId)){

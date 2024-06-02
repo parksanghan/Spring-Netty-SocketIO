@@ -44,8 +44,8 @@ public class SocketConfig {
         config.setHostname(host);
         config.setPort(port);
         config.setOrigin("*");
-
         config.setAuthorizationListener(authZListener);
+
         // SSL 증명서를 로드하고 적용
 //        try {
 //            SslContext sslContext = SslContextBuilder.forServer(new File("your-server-cert.pem"), new File("your-server-key.pem"))
