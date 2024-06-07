@@ -5,6 +5,18 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SocketProperty {
+    public static final String TTS_REQUEST = "ttsrequest";
+
+    public static final String TTS_ANSWER = "ttsanswer";
+
+    public static final  String SET_LANG = "setlang";
+
+    public static final String ERROR = "error";
+
+    public static  final  String STT_ANSWER =  "sttanswer";
+
+    public static  final  String AUDIO = "voice";
+
     public  static final String MESSAGE_KEY = "message";
 
     public static final  String JOIN_ROOM = "join-room";

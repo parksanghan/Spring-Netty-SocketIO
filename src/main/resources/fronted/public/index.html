@@ -5,16 +5,47 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.js"></script>
     <meta
       name="description"
       content="Web site created using create-react-app"
     />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- jQuery UI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+            integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- google Material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="./js/custom.css">
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script type="text/javascript">
+      var myRoomID =  "1"
+
+      var audioMuted = false
+      var videoMuted =  false
+      console.log(">> {{mute_audio}}, {{mute_video}}", audioMuted, videoMuted);
+      console.log(myRoomID);
+    </script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -25,19 +56,76 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
-  </head>
+   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+  <div id="stream-button">
+  <div id="mic-chk">
+    <input type="checkbox" id="chk-hear-mic" />
+    <label for="chk-hear-mic">마이크 소리 듣기</label>
+     <script>
+       const chkHearMic = document.getElementById("chk-hear-mic");
+       const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // 오디오 컨텍스트 정의
+       const analyser = audioCtx.createAnalyser();
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+       let mediaRecorder;
+       let chunks = [];
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+       function makeSound(stream) {
+         const source = audioCtx.createMediaStreamSource(stream);
+         source.connect(analyser);
+         analyser.connect(audioCtx.destination);
+       }
+
+       // 체크박스 변경 이벤트 핸들러
+       chkHearMic.onchange = (e) => {
+         if (e.target.checked) { // e.target.checked === true 대신 e.target.checked로도 충분합니다.
+           navigator.mediaDevices.getUserMedia({ audio: true })
+                   .then(stream => {
+                     audioCtx.resume();
+                     makeSound(stream);
+
+                     // ... (mediaRecorder 관련 로직)
+                   })
+                   .catch(err => {
+                     console.log('The following error occurred: ' + err);
+                   });
+         } else {
+           audioCtx.suspend();
+         }
+       };
+    </script>
+  </div>
+  <button id="record-start">녹음 시작</button>
+  <button id="record-stop">녹음 중지</button>
+    <label for="mySelect">언어 선택: </label><select id="mySelect" multiple>
+      <option value="ko-KR">한국어</option>
+      <option value="en-US">영어</option>
+      <option value="ja-JP">일본어</option>
+    </select>
+    <button id="screen-share">화면 공유</button>
+    <button id="cam-share">캠 화면 공유</button>
+    <span class="container">
+      <!-- 채팅 영역 -->
+      <div class="chat-area">
+        <div class="message">
+          <span class="user">User 1:</span>
+          <p class="text">Hello!</p>
+        </div>
+        <div class="message">
+          <span class="user">User 2:</span>
+          <p class="text">Hi there!</p>
+        </div>
+        <!-- 필요에 따라 더 많은 메시지 추가 -->
+      </div>
+    </span>
+    <!-- 메시지 입력 영역 -->
+    <div class="input-area">
+      <input type="text" placeholder="Type your message...">
+      <button>Send</button>
+    </div>
+   </div>
+
+    <div id="root">
+    </div>
   </body>
 </html>

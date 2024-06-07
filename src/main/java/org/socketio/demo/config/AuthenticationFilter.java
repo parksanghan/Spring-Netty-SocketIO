@@ -44,19 +44,21 @@
     @RequiredArgsConstructor
 
     public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+        @Bean
+        public SessionRegistry sessionRegistry() {
+            return new SessionRegistryImpl();
+        }
 
         private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
         public void unSucessfulAuthentication
                 (HttpServletRequest request, HttpServletResponse response , AuthenticationException failed)
                 throws IOException, ServletException {
             System.out.println("Unsuccessful authentication 호출");
-
             SecurityContextHolder.clearContext();
             setAuthenticationFailureHandler(customAuthenticationFailureHandler);
             AuthenticationFailureHandler handler =getFailureHandler();
             handler.onAuthenticationFailure(request, response, failed);
 //            point.commence(request,response,failed);
-
          }
 
         @Override
@@ -68,14 +70,6 @@
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             String baseUrl = httpRequest.getRequestURL().toString();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-
-            System.out.println(baseUrl); // 요청된 url
-//            Cookie[]  cookies = httpRequest.getCookies();
-//            Cookie jsessionCookie=searchJsessionid(cookies);
-
-            System.out.println(httpRequest.getRequestURI());
-//            if (jsessionCookie!=null)System.out.println(jsessionCookie.getValue());
             // 사용자가 이미 로그인되어 있는지 확인
             // 로그인 된 같은 유저가 또 로그인 요청할 때 거부처리
             try{
@@ -86,9 +80,7 @@
                      System.out.println("이미 로그인됨");
                      Cookie[]  cookies = httpRequest.getCookies();
                      Cookie jsessionCookie=searchJsessionid(cookies);
-                     if (jsessionCookie!=null)System.out.println(jsessionCookie.getValue());
-                     throw DuplicateLoginException.EXCEPTION;
-
+                     if (jsessionCookie!=null) throw DuplicateLoginException.EXCEPTION;
                  }
              }
 
@@ -102,8 +94,6 @@
             System.out.println("중복로그인아님");
 //            super.doFilter(httpRequest, httpResponse, chain); 이거를 호출하게 되면 doFilter를 두번호출하는 것으로 
 //            왜냐하면 doFilter를 재정의해서 하는데 부모 super로 그대로 호출하면 response를 2번 주기 때문임
-
-
             System.out.println("chain.doFoFilter 호출됨.");
             chain.doFilter(request, response);
 
@@ -153,10 +143,6 @@
                 }
             }
             return null;
-        }
-        @Bean
-        public SessionRegistry sessionRegistry() {
-            return new SessionRegistryImpl();
         }
 
 

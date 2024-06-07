@@ -20,7 +20,7 @@ function LoginForm() {
         if (response.ok) {
             // 로그인 성공
             console.log('로그인 성공!');
-            requestSocketConnect();
+
             // 필요한 작업 수행 (예: 페이지 이동, 상태 변경 등)
         } else {
             // 로그인 실패

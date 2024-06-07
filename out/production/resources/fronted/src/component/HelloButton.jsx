@@ -21,7 +21,7 @@ function HelloButton() {
     };
 
     return (
-        <button onClick={handleClick}>GET 요청 보내기</button>
+        <button id={"hellobtn"} >GET 요청 보내기</button>
     );
 }
 

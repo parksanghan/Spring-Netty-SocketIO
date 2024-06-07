@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 /**
@@ -25,11 +26,17 @@ public class LogoutHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         System.out.println(request);
         Cookie[] cookies = request.getCookies();
-        Cookie jsessionIdCookie =AuthenticationFilter.searchJsessionid(cookies);
-        if(AuthenticationFilter.isValidSession(sessionRegistry,jsessionIdCookie)){
-            sessionRegistry.removeSessionInformation(jsessionIdCookie.getValue());
-            System.out.println(jsessionIdCookie.getValue()+"delete in session registry ");
+        Cookie jsessionIdCookie =null;
+        if (cookies!=null){
+            cookies = request.getCookies();
+            jsessionIdCookie =AuthenticationFilter.searchJsessionid(cookies);
+            if(AuthenticationFilter.isValidSession(sessionRegistry,jsessionIdCookie)){
+                sessionRegistry.removeSessionInformation(jsessionIdCookie.getValue());
+                System.out.println(jsessionIdCookie.getValue()+"delete in session registry ");
+            }
         }
+
+
         System.out.println("LogoutHandler onLogoutSuccess");
     }
 }

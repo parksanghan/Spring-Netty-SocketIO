@@ -1,4 +1,5 @@
 import React from 'react';
+import {disconnectSocket} from "../js/sockethandler";
 
 function HelloButton() {
     const handleClick = () => {
@@ -9,6 +10,7 @@ function HelloButton() {
                 if (response.ok) {
                     // 요청이 성공한 경우에 대한 처리
                     console.log('로그아웃 요청이 성공했습니다.');
+
                 } else {
                     // 요청이 실패한 경우에 대한 처리
                     console.error('로그아웃 요청이 실패했습니다.');

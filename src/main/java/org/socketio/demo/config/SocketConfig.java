@@ -45,7 +45,8 @@ public class SocketConfig {
         config.setPort(port);
         config.setOrigin("*");
         config.setAuthorizationListener(authZListener);
-
+        config.setMaxHttpContentLength(10 * 1024 * 1024);
+        config.setMaxFramePayloadLength(10 * 1024 * 1024);
         // SSL 증명서를 로드하고 적용
 //        try {
 //            SslContext sslContext = SslContextBuilder.forServer(new File("your-server-cert.pem"), new File("your-server-key.pem"))

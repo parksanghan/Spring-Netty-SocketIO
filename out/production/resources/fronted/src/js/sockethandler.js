@@ -7,7 +7,7 @@ let socket;
 export const initializeSocket = () => {
     socket = io('http://localhost:8085', {
         transports: ["websocket"],
-        autoConnect: true,
+        autoConnect: false,
         reconnection: true
     });
     socket.on("connect", () => {
@@ -20,10 +20,16 @@ export const handleButtonClick = (message) => {
         console.log(`Message sent: ${message}`);
     }
 };
+export const requestJoinRoom = ()=>{
+    socket.emit();
+}
+export const requestSocketConnect = ()=>{
+    socket.connect();
+}
 
 export const disconnectSocket = () => {
-    if (socket) {
+
         socket.disconnect();
-    }
+
 };
 export const getSocketConfig = () => socket ? socket : null;

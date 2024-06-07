@@ -54,7 +54,7 @@ public class  SocketIoAddMappingSupporter {
                     else if (params.equals(SocketIOClient.class))args.add(client);
                     else if(params.equals(requestTypeCls))args.add(data);
                 }
-                method.invoke(beanFactory.getBean(controller),args.toArray());
+                method. invoke(beanFactory.getBean(controller),args.toArray());
 
             }));
 
